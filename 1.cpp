@@ -83,7 +83,7 @@ public:
     {
         for(Person* element : list)
         {
-            if(m_capacity > 10)
+            if(m_capacity > m_length)
                 return;
             m_persons[m_capacity] = element;
             ++m_capacity;
@@ -92,20 +92,21 @@ public:
     
     Department& operator = (const std::initializer_list<Person*>& list)
     {
+        
         if(list.size() != static_cast<size_t>(m_length))
         {
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < m_length; i++)
                 delete m_persons[i];
             delete[] m_persons;
             
-            // m_length = list.size();
-            m_length = 10;
+            m_length = list.size();
             m_persons = new Person*[m_length];
+            m_capacity = 0;
         }
         
         for(Person* element : list)
         {
-            if(m_capacity > 10)
+            if(m_capacity > m_length)
                 return *this;
             m_persons[m_capacity] = element;
             ++m_capacity;
@@ -124,9 +125,16 @@ public:
         return m_persons;        
     }
     
+    void setPersons(Person** p)
+    {
+        m_persons = p;
+    }
+    
     const std::string getName() const { return m_name; }
     
     int& getCapacity() { return m_capacity; }
+    
+    int& getLength() { return m_length; }
             
     friend std::ostream& operator << (std::ostream& out, Department& d);
             
@@ -135,19 +143,7 @@ public:
         for(int i = 0; i < m_length; i++)
             delete m_persons[i];
         delete[] m_persons;
-    }
-    
-    
-    void erase()
-    {
-        for(int i = 0; i < m_length; i++)
-            delete m_persons[i];
-        delete[] m_persons;
-        
-        m_persons = nullptr;
-        m_length = 0;
-    }
-    
+    }    
 };
 
 
@@ -203,6 +199,35 @@ public:
         
         if(maxSalary != -1)
             m_maxSalary = maxSalary;    
+    }
+    
+    Handler& erase(Department* dp)
+    {
+        for(int i = 0; i < dp->getLength(); i++)
+            delete dp->getPersons()[i];
+        delete[] dp->getPersons();
+        
+        dp->setPersons(nullptr);
+        dp->getLength() = 0;
+        
+        return *this;
+    }
+    
+    Handler& rellocate(Department* dp, int newLength)
+    {
+        erase(dp);
+        if(newLength <= 0)
+            return *this;
+        
+        dp->setPersons(new Person*[newLength]);
+        dp->getLength() = newLength;
+        
+        return *this;
+    }
+    
+    Handler& resize(int newLength)
+    {
+        
     }
     
     ~Handler()
