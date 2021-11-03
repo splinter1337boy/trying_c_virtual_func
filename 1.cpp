@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cassert>
+#include <initializer_list>
 
 class Person
 {
@@ -62,12 +64,54 @@ class Department
 private:
     std::string m_name;
     Person** m_persons;
-    int m_capacity;
+    int m_length = 0;
+    int m_capacity = 0;
     
 public: 
-    Department(const std::string name = nullptr)
-        : m_name(name), m_persons(new Person*[10]), m_capacity(0)
+    Department(const std::string name = nullptr, int length = 10)
+        : m_name(name), m_length(length)
     {
+        assert(length >= 0);
+        if(length > 0)
+            m_persons = new Person*[length];
+        else
+            m_persons = nullptr;
+    }
+    
+    Department(const std::string name, const std::initializer_list<Person*> &list)
+        : Department(name)
+    {
+        for(Person* element : list)
+        {
+            if(m_capacity > 10)
+                return;
+            m_persons[m_capacity] = element;
+            ++m_capacity;
+        }
+    }
+    
+    Department& operator = (const std::initializer_list<Person*>& list)
+    {
+        if(list.size() != static_cast<size_t>(m_length))
+        {
+            for(int i = 0; i < 10; i++)
+                delete m_persons[i];
+            delete[] m_persons;
+            
+            // m_length = list.size();
+            m_length = 10;
+            m_persons = new Person*[m_length];
+        }
+        
+        for(Person* element : list)
+        {
+            if(m_capacity > 10)
+                return *this;
+            m_persons[m_capacity] = element;
+            ++m_capacity;
+        }
+        
+        return *this;
     }
     
     Person* getPerson(int i)
@@ -88,10 +132,22 @@ public:
             
     ~Department()
     {
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < m_length; i++)
             delete m_persons[i];
         delete[] m_persons;
     }
+    
+    
+    void erase()
+    {
+        for(int i = 0; i < m_length; i++)
+            delete m_persons[i];
+        delete[] m_persons;
+        
+        m_persons = nullptr;
+        m_length = 0;
+    }
+    
 };
 
 
@@ -170,6 +226,8 @@ int main()
     Department* d2 = new Department("Makeevka Online");
     Department* d3 = new Department("SkyNet");
     
+    Department* d4 = new Department("Avocado", {new Employee("Pasha", 30, 30000), new Employee("Ilya", 25, 40000)});
+    
     hndlr->addPerson(d1, e3)->addPerson(d1, e4);
     hndlr->addPerson(d2, e5)->addPerson(d2, e4);
     hndlr->addPerson(d3, e1)->addPerson(d3, e2);
@@ -180,10 +238,11 @@ int main()
     std::cout << "Age is " << temp->getAge() << "\n";
     
     
-    
+    std::cout << *d4 << std::endl;
     std::cout << *d1 << std::endl;
     std::cout << *d2 << std::endl;
     std::cout << *d3 << std::endl;
+   
     
     std::cout << "Max Salary is " << hndlr->getMaxSalary() << "\n";
     
@@ -192,6 +251,7 @@ int main()
     delete d1;
     delete d2;
     delete d3;
+    delete d4;
     
     delete e1;
     delete e2;
