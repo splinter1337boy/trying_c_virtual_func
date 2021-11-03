@@ -185,10 +185,7 @@ public:
 
 int main()
 {
-    ArrayInt array(10);
-    
-    for(int i = 0; i < 10; i++)
-        array[i] = i + 1;
+    ArrayInt array { 7, 6, 5, 4, 3, 2, 1 }; // список инициализации
     
     array.resize(7);
     
