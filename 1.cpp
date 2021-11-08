@@ -79,12 +79,12 @@ public:
     }
     
     Department(const std::string name, const std::initializer_list<Person*> &list)
-        : Department(name)
+        : Department(name, list.size())
     {
         for(Person* element : list)
         {
             if(m_capacity > m_length)
-                return;
+                increase();
             m_persons[m_capacity] = element;
             ++m_capacity;
         }
@@ -92,7 +92,6 @@ public:
     
     Department& operator = (const std::initializer_list<Person*>& list)
     {
-        
         if(list.size() != static_cast<size_t>(m_length))
         {
             for(int i = 0; i < m_length; i++)
@@ -107,7 +106,7 @@ public:
         for(Person* element : list)
         {
             if(m_capacity > m_length)
-                return *this;
+                increase();
             m_persons[m_capacity] = element;
             ++m_capacity;
         }
@@ -138,6 +137,33 @@ public:
             
     friend std::ostream& operator << (std::ostream& out, Department& d);
             
+            
+    void increase()
+    {
+        Person** temp = new Person*[m_capacity];
+        for(int i = 0; i < m_capacity; i++)
+            temp[i] = m_persons[i];
+        delete[] m_persons;
+        m_persons = new Person*[m_length * 2];
+        for(int i = 0; i < m_capacity; i++)
+            m_persons[i] = temp[i];
+        delete[] temp;
+        m_capacity *= 2;
+    }
+    
+    void reduce()
+    {
+        Person** temp = new Person*[m_capacity];
+        for(int i = 0; i < m_capacity; i++)
+            temp[i] = m_persons[i];
+        delete[] m_persons;
+        m_persons = new Person*[m_length / 2];
+        for(int i = 0; i < m_capacity; i++)
+            m_persons[i] = temp[i];
+        delete[] temp;
+        m_capacity /= 2;   
+    }
+    
     ~Department()
     {
         for(int i = 0; i < m_length; i++)
@@ -161,6 +187,8 @@ std::ostream& operator << (std::ostream& out, Department& d)
 
 
 
+
+
 class Handler
 {
 private:
@@ -175,12 +203,33 @@ public:
     
     Handler* addPerson(Department* dp, Person* p)
     {
-        if(dp->getCapacity() > 10)
-            return this;
+        if(dp->getCapacity() > dp->getLength())
+            dp->increase();
             
         dp->getPersons()[dp->getCapacity()] = p;
         
         dp->getCapacity()++;
+        
+        return this;
+    }
+    
+    Handler* delPerson(Department* dp, int num)
+    {
+        if(num > 0 && num <= dp->getCapacity())
+        {
+            Person* temp = dp->getPersons()[num - 1];
+            
+            delete dp->getPersons()[num - 1];
+            
+            for(int i = num - 1; i < dp->getCapacity() - 1; i++)
+                dp->getPersons()[i] = dp->getPersons()[i + 1];
+            dp->getPersons()[num - 1] = temp;
+            
+            dp->getCapacity()--;
+            
+            if((dp->getCapacity() < dp->getLength() / 2) && (dp->getLength() > 1))
+                dp->reduce();
+        }
         
         return this;
     }
@@ -209,6 +258,7 @@ public:
         
         dp->setPersons(nullptr);
         dp->getLength() = 0;
+        dp->getCapacity() = 0;
         
         return *this;
     }
@@ -227,7 +277,7 @@ public:
     
     Handler& resize(int newLength)
     {
-        
+        return *this;
     }
     
     ~Handler()
