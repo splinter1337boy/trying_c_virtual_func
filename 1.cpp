@@ -223,7 +223,7 @@ public:
             
             for(int i = num - 1; i < dp->getCapacity() - 1; i++)
                 dp->getPersons()[i] = dp->getPersons()[i + 1];
-            dp->getPersons()[num - 1] = temp;
+            dp->getPersons()[dp->getCapacity() - 1] = temp;
             
             dp->getCapacity()--;
             
