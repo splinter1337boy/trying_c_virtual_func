@@ -275,10 +275,44 @@ public:
         return *this;
     }
     
-    Handler& resize(int newLength)
+    Handler& resize(Department* dp, int newLength)
     {
+        if(newLength == dp->getLength())
+            return *this;
+            
+        if(newLength <= 0)
+        {
+            erase(dp);
+            return *this;
+        }
+        
+        Person** m_persons = new Person*[newLength];
+        
+        if(dp->getLength() > 0)
+        {
+            int elementsToCopy = (newLength > dp->getLength()) ? dp->getLength() : newLength;
+            
+            if(elementsToCopy == dp->getLength())
+                for(int index = 0; index < elementsToCopy; index++)
+                    m_persons[index] = dp->getPerson(index);         
+            else
+            {
+                for(int index = 0; index < elementsToCopy; index++)
+                {
+                    m_persons[index] = dp->getPerson(index);         
+                    dp->getCapacity() = elementsToCopy;
+                }    
+            }
+        }
+        
+        delete[] dp->getPersons();
+        
+        dp->setPersons(m_persons);
+        dp->getLength() = newLength;
+        
         return *this;
     }
+    
     
     ~Handler()
     {  
