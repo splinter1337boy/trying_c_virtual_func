@@ -348,6 +348,7 @@ int main()
     Person* temp = d1->getPerson(0);
     std::cout << "Name is " << temp->getName() << "\n";
     std::cout << "Age is " << temp->getAge() << "\n";
+    // Person temp into Employee and run the "getSalary()" method
     
     
     std::cout << *d4 << std::endl;
