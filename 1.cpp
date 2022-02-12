@@ -81,6 +81,7 @@ public:
     Department(const std::string name, const std::initializer_list<Person*> &list)
         : Department(name, list.size())
     {
+        // check if size greater than 0
         for(Person* element : list)
         {
             if(m_capacity > m_length)
