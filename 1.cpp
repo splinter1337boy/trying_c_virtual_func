@@ -93,6 +93,7 @@ public:
     
     Department& operator = (const std::initializer_list<Person*>& list)
     {
+        // what if size less than 0?  
         if(list.size() != static_cast<size_t>(m_length))
         {
             for(int i = 0; i < m_length; i++)
@@ -104,6 +105,7 @@ public:
             m_capacity = 0;
         }
         
+        // maybe switch this code to a function?
         for(Person* element : list)
         {
             if(m_capacity > m_length)
