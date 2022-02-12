@@ -75,7 +75,7 @@ public:
     
     int& operator[] (int index) const
     {
-        assert(index >= 0 && index <= m_length);
+        assert(index >= 0 && index < m_length);
         return m_data[index];
     }
     
