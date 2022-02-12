@@ -151,7 +151,7 @@ public:
         for(int i = 0; i < m_capacity; i++)
             m_persons[i] = temp[i];
         delete[] temp;
-        m_capacity *= 2;
+        m_capacity *= 2; // ????
     }
     
     void reduce()
@@ -164,7 +164,7 @@ public:
         for(int i = 0; i < m_capacity; i++)
             m_persons[i] = temp[i];
         delete[] temp;
-        m_capacity /= 2;   
+        m_capacity /= 2; // ???
     }
     
     ~Department()
