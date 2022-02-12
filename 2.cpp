@@ -119,7 +119,7 @@ public:
     
     void insertBefore(int value, int index)
     {
-        assert(index >= 0 && index <= m_length);
+        assert(index >= 0 && index < m_length);
         
         int* data = new int[m_length + 1];
         
